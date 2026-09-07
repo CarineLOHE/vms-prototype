@@ -1,0 +1,1037 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found]){display:none!important}</style></head><body>
+<title>COPIL Sécurité VMS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600;700&display=swap">
+<style>
+  :root{
+    color-scheme: light;
+    --paper:#F2F1EC;
+    --surface:#FFFFFF;
+    --surface-2:#FBF9F4;
+    --ink:#1C1E1B;
+    --ink-2:#55564F;
+    --ink-muted:#8A8B82;
+    --line:#DEDBD2;
+    --line-strong:#C7C4B8;
+    --accent:#A6631A;
+    --accent-ink:#6B420F;
+    --accent-soft:#F1E3D0;
+    --bar:#3D5A73;
+    --bar-soft:#E4EBEF;
+    --good:#0ca30c;
+    --warning:#fab219;
+    --serious:#ec835a;
+    --critical:#d03b3b;
+    --type-capitaliser:#2a78d6;
+    --type-accompagner:#1baf7a;
+    --type-explorer:#4a3aa7;
+    --shadow: 0 1px 2px rgba(28,30,27,0.06), 0 8px 20px -12px rgba(28,30,27,0.18);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      color-scheme: dark;
+      --paper:#17181A;
+      --surface:#1F2123;
+      --surface-2:#25272A;
+      --ink:#F3F2EC;
+      --ink-2:#C7C6BE;
+      --ink-muted:#8B8C86;
+      --line:#34362F;
+      --line-strong:#454740;
+      --accent:#D99A46;
+      --accent-ink:#F0C68C;
+      --accent-soft:#3A2E1C;
+      --bar:#7CA0BC;
+      --bar-soft:#233240;
+      --type-capitaliser:#3987e5;
+      --type-accompagner:#199e70;
+      --type-explorer:#9085e9;
+      --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 10px 24px -14px rgba(0,0,0,0.6);
+    }
+  }
+  :root[data-theme="dark"]{
+    color-scheme: dark;
+    --paper:#17181A;
+    --surface:#1F2123;
+    --surface-2:#25272A;
+    --ink:#F3F2EC;
+    --ink-2:#C7C6BE;
+    --ink-muted:#8B8C86;
+    --line:#34362F;
+    --line-strong:#454740;
+    --accent:#D99A46;
+    --accent-ink:#F0C68C;
+    --accent-soft:#3A2E1C;
+    --bar:#7CA0BC;
+    --bar-soft:#233240;
+    --type-capitaliser:#3987e5;
+    --type-accompagner:#199e70;
+    --type-explorer:#9085e9;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 10px 24px -14px rgba(0,0,0,0.6);
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font: 400 15px/1.5 "IBM Plex Sans", system-ui, sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .page{max-width:1180px; margin:0 auto; padding:0 24px 80px;}
+
+  h1,h2,h3{ text-wrap:balance; margin:0; font-family:"Barlow Semi Condensed", system-ui, sans-serif; }
+  .mono{ font-family:"IBM Plex Mono", ui-monospace, monospace; font-variant-numeric:tabular-nums; }
+
+  /* ---------- masthead ---------- */
+  .demo-banner{
+    background:var(--accent-soft); color:var(--accent-ink); border-bottom:1px solid var(--line);
+    font-size:12.5px; font-weight:600; letter-spacing:.01em; padding:8px 24px; text-align:center;
+  }
+  .masthead{ padding:36px 0 20px; display:flex; flex-direction:column; gap:18px; }
+  .masthead-top{ display:flex; justify-content:space-between; align-items:flex-start; gap:24px; flex-wrap:wrap; }
+  .eyebrow{
+    text-transform:uppercase; letter-spacing:.09em; font-size:12px; font-weight:600;
+    color:var(--accent-ink); margin:0 0 6px;
+  }
+  .masthead h1{ font-size:34px; font-weight:700; }
+  .masthead p.sub{ margin:8px 0 0; color:var(--ink-2); font-size:15px; max-width:60ch; }
+  .meta-card{
+    background:var(--surface); border:1px solid var(--line); border-radius:12px; box-shadow:var(--shadow);
+    padding:14px 18px; min-width:220px; font-size:13px; color:var(--ink-2);
+  }
+  .meta-card b{ color:var(--ink); font-family:"IBM Plex Mono"; font-size:14px; }
+  .meta-row{ display:flex; justify-content:space-between; gap:12px; padding:3px 0; }
+  .meta-row + .meta-row{ border-top:1px dashed var(--line); }
+
+  .stepnav{
+    position:sticky; top:0; z-index:20; display:flex; gap:2px; background:var(--paper);
+    padding-top:10px; padding-bottom:10px; border-bottom:1px solid var(--line);
+  }
+  .stepnav a{
+    flex:1; display:flex; align-items:center; gap:10px; text-decoration:none; color:var(--ink-2);
+    background:var(--surface); border:1px solid var(--line); padding:10px 14px; border-radius:10px;
+    font-size:13.5px; font-weight:600; transition:border-color .15s, color .15s;
+  }
+  .stepnav a:hover{ color:var(--ink); border-color:var(--line-strong); }
+  .stepnav .num{
+    font-family:"Barlow Semi Condensed"; font-weight:700; font-size:15px; color:var(--accent);
+    width:20px;
+  }
+
+  /* ---------- chapters ---------- */
+  .chapter{ padding:56px 0 8px; scroll-margin-top:70px; }
+  .chapter-head{ display:flex; align-items:baseline; gap:14px; margin-bottom:6px; }
+  .chapter-num{
+    font-family:"Barlow Semi Condensed"; font-weight:700; font-size:15px; color:var(--surface);
+    background:var(--accent); width:30px; height:30px; border-radius:8px; display:inline-flex;
+    align-items:center; justify-content:center; flex:none;
+  }
+  .chapter h2{ font-size:26px; font-weight:700; letter-spacing:.01em; }
+  .chapter-kicker{ color:var(--ink-2); font-size:14.5px; font-style:italic; margin:6px 0 18px 44px; max-width:70ch; }
+  .edit-hint{ display:flex; align-items:center; gap:7px; margin:0 0 22px 44px; font-size:12.5px; color:var(--ink-muted); }
+  .edit-hint .k{ background:var(--surface); border:1px solid var(--line); border-radius:5px; padding:1px 6px; font-family:"IBM Plex Mono"; font-size:11px; color:var(--ink-2); }
+
+  /* ---------- editable values ---------- */
+  .editval{
+    border-bottom:1.5px dashed var(--line-strong); cursor:pointer; border-radius:3px; padding:0 2px;
+    transition:background .12s, border-color .12s;
+  }
+  .editval:hover{ background:var(--accent-soft); border-bottom-color:var(--accent); }
+  input.editinput{
+    font:inherit; color:var(--ink); background:var(--surface); border:1px solid var(--accent);
+    border-radius:4px; padding:0 3px; outline:none;
+  }
+  input.editinput::-webkit-outer-spin-button, input.editinput::-webkit-inner-spin-button{ -webkit-appearance:none; margin:0; }
+  input.editinput[type=number]{ -moz-appearance:textfield; }
+
+  .rowadd{
+    margin-top:6px; background:none; border:1px dashed var(--line-strong); color:var(--ink-muted);
+    font:600 12px "IBM Plex Sans"; padding:6px 10px; border-radius:8px; cursor:pointer; text-align:left;
+  }
+  .rowadd:hover{ color:var(--ink); border-color:var(--ink-2); }
+  .rowremove{
+    background:none; border:none; color:var(--ink-muted); cursor:pointer; font-size:14px; line-height:1;
+    padding:0 2px; opacity:0; transition:opacity .15s, color .15s;
+  }
+  .rowremove:hover{ color:var(--critical); }
+  .barlist .row:hover .rowremove{ opacity:1; }
+  .tag .rowremove{ opacity:.5; margin-left:1px; }
+  .tag .rowremove:hover{ opacity:1; }
+
+  /* ---------- KPI grid (Mesurer) ---------- */
+  .kpi-grid{
+    display:grid; grid-template-columns:repeat(6,1fr); gap:14px;
+  }
+  .tile{
+    background:var(--surface); border:1px solid var(--line); border-radius:14px; box-shadow:var(--shadow);
+    padding:16px 18px; display:flex; flex-direction:column; gap:10px;
+  }
+  .tile h3{ font-size:12.5px; font-weight:600; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-muted); font-family:"IBM Plex Sans"; }
+  .tile .big{ font-size:32px; font-weight:600; line-height:1; }
+  .tile .big small{ font-size:14px; font-weight:500; color:var(--ink-muted); margin-left:4px; }
+  .tile .foot{ font-size:12.5px; color:var(--ink-2); margin-top:auto; }
+  .tile .foot.alert{ color:var(--critical); font-weight:600; }
+  .tile .foot.ok{ color:var(--good); font-weight:600; }
+
+  .t-realise{ grid-column:span 2; }
+  .t-taux{ grid-column:span 2; }
+  .t-superv{ grid-column:span 2; }
+  .t-secteur{ grid-column:span 3; }
+  .t-manager{ grid-column:span 3; }
+  .t-dates{ grid-column:span 3; }
+  .t-diversite{ grid-column:span 3; }
+
+  .spark{ width:100%; height:46px; }
+  details.trend-edit{ margin-top:-2px; }
+  details.trend-edit summary{ cursor:pointer; font-size:11.5px; color:var(--ink-muted); font-weight:600; list-style:none; }
+  details.trend-edit summary::-webkit-details-marker{ display:none; }
+  details.trend-edit summary::before{ content:'▸ modifier l’historique mensuel'; }
+  details.trend-edit[open] summary::before{ content:'▾ modifier l’historique mensuel'; }
+  details.trend-edit summary{ font-size:0; }
+  details.trend-edit summary::before{ font-size:11.5px; }
+  .trend-grid{ display:grid; grid-template-columns:repeat(8,1fr); gap:6px; margin:8px 0 2px; }
+  .trend-cell{ display:flex; flex-direction:column; align-items:center; gap:3px; }
+  .trend-cell .tlabel{ font-size:10px; color:var(--ink-muted); }
+  .trend-cell .editval{ font-family:"IBM Plex Mono"; font-size:12px; }
+
+  .ring{ display:flex; align-items:center; gap:14px; }
+  .ring svg{ flex:none; }
+  .barlist{ display:flex; flex-direction:column; gap:7px; }
+  .barlist .row{ display:grid; grid-template-columns:112px 1fr 28px 16px; align-items:center; gap:8px; font-size:12.5px; }
+  .barlist .label{ color:var(--ink-2); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .barlist .track{ background:var(--bar-soft); border-radius:5px; height:9px; overflow:hidden; }
+  .barlist .fill{ height:100%; border-radius:5px; background:var(--bar); }
+  .barlist .fill.zero{ background:var(--critical); opacity:.35; width:4px !important; }
+  .barlist .val{ text-align:right; font-family:"IBM Plex Mono"; font-size:12px; color:var(--ink-2); }
+  .barlist .row.zero .label{ color:var(--critical); font-weight:600; }
+
+  .weekbars{ display:flex; align-items:flex-end; gap:8px; height:64px; }
+  .weekbars .col{ flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; height:100%; justify-content:flex-end; }
+  .weekbars .bar{ width:100%; border-radius:4px 4px 2px 2px; background:var(--bar); min-height:3px; }
+  .weekbars .bar.hot{ background:var(--warning); }
+  .weekbars .n{ font-size:11px; font-family:"IBM Plex Mono"; color:var(--ink-2); }
+  .weekbars .w{ font-size:10.5px; color:var(--ink-muted); }
+
+  .cov{ display:flex; flex-direction:column; gap:9px; }
+  .cov .item{ display:grid; grid-template-columns:110px 1fr auto; align-items:center; gap:8px; font-size:12.5px; }
+  .cov .track{ background:var(--bar-soft); border-radius:5px; height:8px; }
+  .cov .fill{ height:100%; border-radius:5px; background:var(--accent); }
+  .cov .lbl{ color:var(--ink-2); }
+  .cov .v{ font-family:"IBM Plex Mono"; font-size:12px; color:var(--ink-2); white-space:nowrap; }
+
+  /* ---------- tag / dot ---------- */
+  .tag{
+    display:inline-flex; align-items:center; gap:6px; padding:3px 9px; border-radius:999px;
+    border:1px solid var(--line); font-size:11.5px; font-weight:600; color:var(--ink-2); background:var(--surface);
+    white-space:nowrap;
+  }
+  .tag .dot{ width:7px; height:7px; border-radius:50%; flex:none; }
+  .badge{
+    display:inline-flex; align-items:center; gap:5px; padding:3px 9px; border-radius:7px;
+    font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.03em; color:#fff; white-space:nowrap;
+  }
+  .badge.retard{ background:var(--critical); }
+  .badge.ok{ background:var(--good); }
+
+  .star-toggle{
+    border:1px solid var(--line); background:var(--surface); color:var(--ink-muted); font-weight:600; font-size:12px;
+    padding:6px 11px; border-radius:8px; cursor:pointer; transition:.12s;
+  }
+  .star-toggle:hover{ border-color:var(--accent); color:var(--accent-ink); }
+  .star-toggle.active{ background:var(--accent-soft); border-color:var(--accent); color:var(--accent-ink); }
+
+  /* ---------- Comprendre ---------- */
+  .pepites-head{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:10px; gap:12px; flex-wrap:wrap; }
+  .pepites-head h3{ font-size:15px; font-weight:700; color:var(--ink); }
+  .pepites-count{ font-size:12.5px; color:var(--ink-muted); font-weight:600; }
+  .pepites-strip{
+    display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:30px;
+  }
+  .pepite-card{
+    background:linear-gradient(180deg,var(--accent-soft),var(--surface) 55%);
+    border:1px solid var(--line); border-radius:14px; padding:16px 18px; box-shadow:var(--shadow);
+  }
+  .pepite-card .star{ font-family:"Barlow Semi Condensed"; font-weight:700; color:var(--accent-ink); font-size:12.5px; text-transform:uppercase; letter-spacing:.05em; display:flex; gap:6px; align-items:center; margin-bottom:8px; }
+  .pepite-card p{ margin:0; font-size:14px; color:var(--ink); }
+  .pepite-card .src{ margin-top:10px; font-size:12px; color:var(--ink-muted); }
+  .pepite-empty{
+    grid-column:1/-1; border:1px dashed var(--line-strong); border-radius:14px; padding:22px;
+    color:var(--ink-muted); font-size:13.5px; text-align:center; background:var(--surface-2);
+  }
+  .pepite-empty strong{ color:var(--accent-ink); }
+
+  .tabs{ display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap; }
+  .tabbtn{
+    border:1px solid var(--line); background:var(--surface); color:var(--ink-2); font-weight:600; font-size:13px;
+    padding:9px 14px; border-radius:10px; cursor:pointer; display:flex; align-items:center; gap:8px;
+  }
+  .tabbtn .dot{ width:8px; height:8px; border-radius:50%; }
+  .tabbtn .count{ font-family:"IBM Plex Mono"; font-size:11.5px; background:var(--bar-soft); color:var(--ink-2); padding:1px 7px; border-radius:999px; }
+  .tabbtn.active{ border-color:var(--ink); color:var(--ink); background:var(--surface-2); }
+
+  .situations-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:14px; }
+  .sit-card{
+    background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:16px 18px;
+    box-shadow:var(--shadow); display:flex; flex-direction:column; gap:10px;
+  }
+  .sit-card .tags{ display:flex; gap:6px; flex-wrap:wrap; }
+  .sit-card p.desc{ margin:0; font-size:14px; color:var(--ink); line-height:1.5; }
+  .sit-card .meta{ font-size:12px; color:var(--ink-muted); display:flex; gap:10px; flex-wrap:wrap; }
+  .sit-card .actions-row{ display:flex; justify-content:space-between; align-items:center; gap:10px; margin-top:2px; }
+  .sit-card .actions-row .right{ display:flex; gap:10px; align-items:center; }
+  .linked-chip{ font-size:11.5px; color:var(--good); font-weight:600; background:var(--bar-soft); padding:3px 8px; border-radius:999px; }
+
+  .btn{
+    border:1px solid var(--line-strong); background:var(--surface); color:var(--ink); font-weight:600; font-size:12.5px;
+    padding:7px 12px; border-radius:8px; cursor:pointer;
+  }
+  .btn:hover{ border-color:var(--ink); }
+  .btn.primary{ background:var(--accent); border-color:var(--accent); color:#fff; }
+  .btn.primary:hover{ filter:brightness(1.06); }
+  .btn.ghost{ background:transparent; border-color:transparent; color:var(--accent-ink); padding:7px 4px; }
+
+  .inline-form{
+    display:none; margin-top:8px; padding-top:12px; border-top:1px dashed var(--line);
+    grid-template-columns:1fr 1fr; gap:10px;
+  }
+  .inline-form.open{ display:grid; }
+  .inline-form label{ font-size:11.5px; font-weight:600; color:var(--ink-muted); text-transform:uppercase; letter-spacing:.04em; display:block; margin-bottom:4px; }
+  .inline-form input, .inline-form select, .inline-form textarea{
+    width:100%; font:500 13.5px "IBM Plex Sans"; padding:7px 9px; border:1px solid var(--line-strong);
+    border-radius:7px; background:var(--paper); color:var(--ink);
+  }
+  .inline-form .full{ grid-column:1 / -1; }
+  .inline-form .row-btns{ grid-column:1/-1; display:flex; justify-content:flex-end; gap:8px; margin-top:4px; }
+
+  .add-panel{
+    background:var(--surface-2); border:1px dashed var(--line-strong); border-radius:14px; padding:18px;
+    margin-top:18px;
+  }
+  .add-panel h4{ font-family:"IBM Plex Sans"; font-size:14px; font-weight:700; margin:0 0 12px; }
+  .add-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
+  .add-grid .full{ grid-column:1/-1; }
+  .add-grid label{ font-size:11.5px; font-weight:600; color:var(--ink-muted); text-transform:uppercase; letter-spacing:.04em; display:block; margin-bottom:4px; }
+  .add-grid input, .add-grid select, .add-grid textarea{
+    width:100%; font:500 13.5px "IBM Plex Sans"; padding:7px 9px; border:1px solid var(--line-strong);
+    border-radius:7px; background:var(--surface); color:var(--ink);
+  }
+
+  /* ---------- Décider ---------- */
+  .decider-summary{ display:flex; gap:10px; margin-bottom:18px; flex-wrap:wrap; }
+  .sum-chip{
+    background:var(--surface); border:1px solid var(--line); border-radius:11px; padding:10px 16px;
+    display:flex; align-items:center; gap:10px; box-shadow:var(--shadow);
+  }
+  .sum-chip .n{ font-family:"IBM Plex Mono"; font-weight:700; font-size:19px; }
+  .sum-chip .l{ font-size:12px; color:var(--ink-2); font-weight:600; }
+
+  .decider-filters{ display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap; align-items:center; }
+  .filterbtn{
+    border:1px solid var(--line); background:var(--surface); color:var(--ink-2); font-weight:600; font-size:12.5px;
+    padding:7px 12px; border-radius:999px; cursor:pointer;
+  }
+  .filterbtn.active{ border-color:var(--ink); color:var(--ink); background:var(--surface-2); }
+
+  .table-wrap{ overflow-x:auto; border:1px solid var(--line); border-radius:14px; background:var(--surface); box-shadow:var(--shadow); }
+  table.decider{ width:100%; border-collapse:collapse; font-size:13.5px; min-width:920px; }
+  table.decider thead th{
+    text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-muted);
+    font-weight:600; padding:12px 14px; border-bottom:1px solid var(--line); white-space:nowrap;
+  }
+  table.decider tbody td{ padding:12px 14px; border-bottom:1px solid var(--line); vertical-align:top; }
+  table.decider tbody tr:last-child td{ border-bottom:none; }
+  table.decider tbody tr.retard{ background:color-mix(in srgb, var(--critical) 6%, transparent); }
+  .lib{ font-weight:500; color:var(--ink); }
+  .note{ color:var(--ink-muted); font-size:12px; margin-top:3px; }
+  .echeance{ font-family:"IBM Plex Mono"; font-size:12.5px; white-space:nowrap; }
+  select.statut-select{
+    font:600 12px "IBM Plex Sans"; padding:5px 8px; border-radius:7px; border:1px solid var(--line-strong);
+    background:var(--paper); color:var(--ink);
+  }
+  .src-chip{
+    font-size:11.5px; color:var(--accent-ink); background:var(--accent-soft); border:none; cursor:pointer;
+    padding:4px 9px; border-radius:999px; font-weight:600;
+  }
+  .src-chip.none{ color:var(--ink-muted); background:transparent; cursor:default; }
+
+  .flash{ animation:flashbg 1.4s ease; }
+  @keyframes flashbg{ 0%{ background:var(--accent-soft);} 100%{ background:transparent;} }
+
+  footer.page-foot{
+    margin-top:60px; padding-top:20px; border-top:1px solid var(--line); color:var(--ink-muted); font-size:12.5px;
+    display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap; align-items:center;
+  }
+  #resetBtn{ font-size:12px; padding:6px 12px; }
+
+  @media (max-width:900px){
+    .kpi-grid{ grid-template-columns:repeat(2,1fr); }
+    .t-realise,.t-taux,.t-superv,.t-secteur,.t-manager,.t-dates,.t-diversite{ grid-column:span 2; }
+    .situations-grid{ grid-template-columns:1fr; }
+    .pepites-strip{ grid-template-columns:1fr; }
+    .add-grid{ grid-template-columns:1fr 1fr; }
+    .trend-grid{ grid-template-columns:repeat(4,1fr); }
+    .stepnav{ flex-wrap:wrap; }
+  }
+</style>
+
+<div class="demo-banner">Prototype de démonstration — données d'exemple à but illustratif, non enregistrées (rien n'est sauvegardé au rechargement de la page)</div>
+
+<div class="page">
+
+  <div class="masthead">
+    <div class="masthead-top">
+      <div>
+        <p class="eyebrow">Comité de pilotage sécurité · Trame Mesurer — Comprendre — Décider</p>
+        <h1>COPIL Sécurité — Visites Managériales de Sécurité</h1>
+        <p class="sub">Outil de préparation et d'animation du COPIL mensuel : les chiffres du mois, les situations remontées par les observateurs, et le suivi des actions décidées.</p>
+      </div>
+      <div class="meta-card">
+        <div class="meta-row"><span>Réunion</span><b>07 sept. 2026</b></div>
+        <div class="meta-row"><span>Période analysée</span><b>Août 2026</b></div>
+        <div class="meta-row"><span>Site</span><b>Sainte-Savine</b></div>
+      </div>
+    </div>
+    <nav class="stepnav">
+      <a href="#mesurer"><span class="num">I</span> Mesurer — le pilotage quantitatif</a>
+      <a href="#comprendre"><span class="num">II</span> Comprendre — les remontées terrain</a>
+      <a href="#decider"><span class="num">III</span> Décider — le suivi des actions</a>
+    </nav>
+  </div>
+
+  <main>
+
+    <!-- ================= MESURER ================= -->
+    <section class="chapter" id="mesurer">
+      <div class="chapter-head"><span class="chapter-num">I</span><h2>Mesurer</h2></div>
+      <p class="chapter-kicker">« Occupons-nous suffisamment le terrain ? » — le socle quantitatif qui ouvre le COPIL.</p>
+      <p class="edit-hint"><span class="k">✎</span> Cliquez sur un chiffre pour le saisir — pourcentages, jauges et alertes se recalculent automatiquement. Appuyez sur <span class="k">Entrée</span> pour valider, <span class="k">Échap</span> pour annuler.</p>
+
+      <div class="kpi-grid" id="kpiGrid"></div>
+    </section>
+
+    <!-- ================= COMPRENDRE ================= -->
+    <section class="chapter" id="comprendre">
+      <div class="chapter-head"><span class="chapter-num">II</span><h2>Comprendre</h2></div>
+      <p class="chapter-kicker">« Qu'avons-nous appris du terrain ? » — les remontées des observateurs, à qualifier et, si besoin, transformer en action.</p>
+
+      <div class="pepites-head">
+        <h3>★ Pépites du mois</h3>
+        <span class="pepites-count" id="pepitesCount"></span>
+      </div>
+      <div class="pepites-strip" id="pepitesStrip"></div>
+
+      <div class="tabs" id="tabs">
+        <button class="tabbtn active" data-tab="bonne_pratique"><span class="dot" style="background:var(--good)"></span>Bonnes pratiques <span class="count" id="cnt-bonne_pratique"></span></button>
+        <button class="tabbtn" data-tab="risque_comportemental"><span class="dot" style="background:var(--warning)"></span>Comportements à risque <span class="count" id="cnt-risque_comportemental"></span></button>
+        <button class="tabbtn" data-tab="situation_risque"><span class="dot" style="background:var(--serious)"></span>Situations à risque (moyens / environnement) <span class="count" id="cnt-situation_risque"></span></button>
+      </div>
+
+      <div class="situations-grid" id="situationsGrid"></div>
+
+      <div class="add-panel">
+        <h4>+ Remonter une nouvelle situation (simulation d'une remontée observateur)</h4>
+        <form class="add-grid" id="addSituationForm">
+          <div>
+            <label>Type</label>
+            <select name="type" required>
+              <option value="bonne_pratique">Bonne pratique</option>
+              <option value="risque_comportemental">Comportement à risque</option>
+              <option value="situation_risque">Situation à risque</option>
+            </select>
+          </div>
+          <div>
+            <label>Secteur</label>
+            <select name="secteur">
+              <option>Fabrication</option><option>Conditionnement</option><option>Logistique</option><option>Qualité</option><option>Maintenance</option>
+            </select>
+          </div>
+          <div>
+            <label>Manager / observateur</label>
+            <input type="text" name="manager" placeholder="Ex. J. Roussel" required>
+          </div>
+          <div>
+            <label>Date</label>
+            <input type="date" name="date" value="2026-08-25">
+          </div>
+          <div class="full">
+            <label>Description</label>
+            <textarea name="description" rows="2" placeholder="Ce qui a été observé ou partagé…" required></textarea>
+          </div>
+          <div class="full" style="display:flex; justify-content:flex-end; gap:8px;">
+            <button type="submit" class="btn primary">Ajouter la remontée</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- ================= DECIDER ================= -->
+    <section class="chapter" id="decider">
+      <div class="chapter-head"><span class="chapter-num">III</span><h2>Décider</h2></div>
+      <p class="chapter-kicker">« Comment soutenons-nous la dynamique ? » — capitaliser, accompagner, explorer et corriger : le tableau de suivi vivant du COPIL.</p>
+
+      <div class="decider-summary" id="deciderSummary"></div>
+
+      <div class="decider-filters" id="deciderFilters">
+        <button class="filterbtn active" data-filter="all">Toutes les actions</button>
+        <button class="filterbtn" data-filter="À faire">À faire</button>
+        <button class="filterbtn" data-filter="En cours">En cours</button>
+        <button class="filterbtn" data-filter="Bloqué">Bloqué</button>
+        <button class="filterbtn" data-filter="Fait">Fait</button>
+      </div>
+
+      <div class="table-wrap">
+        <table class="decider">
+          <thead>
+            <tr>
+              <th>Type</th>
+              <th>Action</th>
+              <th>Situation source</th>
+              <th>Responsable</th>
+              <th>Échéance</th>
+              <th>Statut</th>
+            </tr>
+          </thead>
+          <tbody id="deciderBody"></tbody>
+        </table>
+      </div>
+
+      <div class="add-panel" style="margin-top:18px;">
+        <h4>+ Ajouter une action</h4>
+        <form class="add-grid" id="addActionForm">
+          <div>
+            <label>Type</label>
+            <select name="type" required>
+              <option value="capitaliser">Capitaliser</option>
+              <option value="accompagner">Accompagner</option>
+              <option value="explorer">Explorer et corriger</option>
+            </select>
+          </div>
+          <div class="full">
+            <label>Action</label>
+            <input type="text" name="libelle" placeholder="Décrire l'action décidée" required>
+          </div>
+          <div>
+            <label>Responsable</label>
+            <input type="text" name="responsable" placeholder="Nom" required>
+          </div>
+          <div>
+            <label>Échéance</label>
+            <input type="date" name="echeance" value="2026-09-30" required>
+          </div>
+          <div>
+            <label>Statut</label>
+            <select name="statut">
+              <option>À faire</option><option>En cours</option><option>Bloqué</option><option>Fait</option>
+            </select>
+          </div>
+          <div class="full">
+            <label>Note de suivi (optionnel)</label>
+            <input type="text" name="note" placeholder="Précision, point de vigilance…">
+          </div>
+          <div class="full" style="display:flex; justify-content:flex-end; gap:8px;">
+            <button type="submit" class="btn primary">Ajouter au tableau</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="page-foot">
+    <span>ID.QUATION — Accompagnement VMS Clarins · Prototype réalisé pour valider la structure du COPIL avant mise en place</span>
+    <button class="btn ghost" id="resetBtn" style="border:1px solid var(--line-strong); color:var(--ink-2);">↺ Réinitialiser la démo</button>
+  </footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  const MEETING_DATE = new Date('2026-09-07T00:00:00');
+  const MONTHS = ['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Août'];
+
+  const TYPE_META = {
+    bonne_pratique:       { label:'Bonne pratique',        color:'var(--good)' },
+    risque_comportemental:{ label:'Comportement à risque', color:'var(--warning)' },
+    situation_risque:     { label:'Situation à risque',    color:'var(--serious)' }
+  };
+  const ACTION_TYPE_META = {
+    capitaliser: { label:'Capitaliser', color:'var(--type-capitaliser)' },
+    accompagner: { label:'Accompagner', color:'var(--type-accompagner)' },
+    explorer:    { label:'Explorer et corriger', color:'var(--type-explorer)' }
+  };
+  const SUGGEST_TYPE = { bonne_pratique:'capitaliser', risque_comportemental:'accompagner', situation_risque:'explorer' };
+
+  // ---------------- state ----------------
+  const initialKpi = {
+    vmsMois: 34, vmsObjectif: 40, vmsCumulAnnee: 211,
+    trend: [19,23,26,21,29,32,27,34],
+    managersRealises: 19, managersTotal: 22,
+    supervisesN1: 14, supervisionTotal: 22,
+    secteurs: [
+      {label:'Fabrication', v:9},{label:'Conditionnement', v:8},{label:'Logistique', v:6},
+      {label:'Qualité', v:5},{label:'Maintenance', v:6}
+    ],
+    managers: [
+      {label:'Julien (Fab.)', v:4},{label:'Nora (Maint.)', v:3},{label:'Camille (Cond.)', v:3},
+      {label:'Hugo (Qual.)', v:2},{label:'Sofia (Log.)', v:2},{label:'Manager A', v:1},
+      {label:'Manager B', v:0},{label:'Manager C', v:0},{label:'Manager D', v:0}
+    ],
+    semaine: [6,7,6,15],
+    postesCouverts:7, postesTotal:8,
+    horairesCouverts:2, horairesTotal:3,
+    profils: ['CDI','Intérim.']
+  };
+
+  const initialSituations = [
+    { id:'s1', type:'bonne_pratique', facteur:'Anticipation des risques', pepite:true,
+      description:"Un opérateur a proposé un marquage au sol supplémentaire pour mieux délimiter la zone de circulation des chariots.",
+      secteur:'Conditionnement', manager:'Camille (manager Conditionnement)', date:'2026-08-03' },
+    { id:'s2', type:'bonne_pratique', facteur:'Tours de main sécurité', pepite:true,
+      description:"Technique de verrouillage machine partagée spontanément entre deux équipes avant redémarrage (double-check).",
+      secteur:'Fabrication', manager:'Julien (manager Fabrication)', date:'2026-08-10' },
+    { id:'s3', type:'bonne_pratique', facteur:'Entraide', pepite:true,
+      description:"Un intérimaire a interpellé son équipe sur le port du protecteur auditif en zone bruyante, avant même la remarque du manager.",
+      secteur:'Logistique', manager:'Sofia (manager Logistique)', date:'2026-08-15' },
+    { id:'s4', type:'bonne_pratique', facteur:'Gestion des modes dégradés', pepite:false,
+      description:"Gestion exemplaire d'un mode dégradé suite à panne convoyeur : arrêt immédiat et information transmise à l'équipe suivante.",
+      secteur:'Maintenance', manager:'Nora (manager Maintenance)', date:'2026-08-21' },
+    { id:'s5', type:'bonne_pratique', facteur:'Anticipation des risques', pepite:false,
+      description:"Vérification systématique des harnais avant travail en hauteur, au-delà du standard demandé.",
+      secteur:'Qualité', manager:'Hugo (manager Qualité)', date:'2026-08-08' },
+
+    { id:'s6', type:'risque_comportemental', facteur:'Organisationnel', pepite:false,
+      description:"Raccourci récurrent : certains opérateurs contournent le sas de sécurité pour gagner du temps en changement de poste.",
+      secteur:'Fabrication', manager:'Julien (manager Fabrication)', date:'2026-08-12' },
+    { id:'s7', type:'risque_comportemental', facteur:'Managérial', pepite:false,
+      description:"Port des EPI relâché en fin de poste, notamment sur les créneaux peu supervisés en soirée.",
+      secteur:'Conditionnement', manager:'Camille (manager Conditionnement)', date:'2026-08-18' },
+    { id:'s8', type:'risque_comportemental', facteur:'Relationnel', pepite:false,
+      description:"Tensions persistantes entre deux équipes lors de la passation, générant pression et raccourcis.",
+      secteur:'Logistique', manager:'Sofia (manager Logistique)', date:'2026-08-22' },
+
+    { id:'s9', type:'situation_risque', gravite:'Élevée', frequence:'Quotidienne (nuit)', pepite:false,
+      description:"Éclairage insuffisant sur le quai de chargement en horaire de nuit.",
+      secteur:'Logistique', manager:'Sofia (manager Logistique)', date:'2026-08-14' },
+    { id:'s10', type:'situation_risque', gravite:'Élevée', frequence:'Hebdomadaire', pepite:false,
+      description:"Sol glissant récurrent près de la zone de lavage, signalé à plusieurs reprises.",
+      secteur:'Fabrication', manager:'Julien (manager Fabrication)', date:'2026-08-19' },
+    { id:'s11', type:'situation_risque', gravite:'Moyenne', frequence:'Quotidienne', pepite:false,
+      description:"Espace de circulation piéton / chariot trop réduit dans l'allée B.",
+      secteur:'Conditionnement', manager:'Camille (manager Conditionnement)', date:'2026-08-26' }
+  ];
+
+  const initialActions = [
+    { id:'a1', type:'capitaliser', libelle:"Partager la technique de verrouillage machine (double-check) aux AIC de toutes les lignes Fabrication", situationId:'s2', responsable:'J. Roussel (HSE)', echeance:'2026-09-15', statut:'En cours', note:'' },
+    { id:'a2', type:'capitaliser', libelle:"Diffuser le message du mois sur l'anticipation des risques (marquage au sol)", situationId:'s1', responsable:'Camille', echeance:'2026-08-29', statut:'Fait', note:'' },
+    { id:'a3', type:'accompagner', libelle:"Superviser terrain le contournement du sas en Fabrication", situationId:'s6', responsable:'N+1 Fabrication', echeance:'2026-10-05', statut:'À faire', note:'' },
+    { id:'a4', type:'accompagner', libelle:"Coaching ciblé sur le port des EPI en fin de poste", situationId:'s7', responsable:'Camille', echeance:'2026-08-28', statut:'En cours', note:'Point de vigilance : équipes de nuit' },
+    { id:'a5', type:'explorer', libelle:"Étudier le renforcement de l'éclairage du quai nuit avec les Travaux", situationId:'s9', responsable:'Nora', echeance:'2026-10-15', statut:'Bloqué', note:'En attente de devis' },
+    { id:'a6', type:'explorer', libelle:"Élargir l'allée B (marquage au sol + réorganisation du stockage)", situationId:'s11', responsable:'Julien', echeance:'2026-08-30', statut:'En cours', note:'' },
+    { id:'a7', type:'accompagner', libelle:"Rappel du créneau de passation lors de la prochaine AIC", situationId:null, responsable:'Sofia', echeance:'2026-09-12', statut:'À faire', note:'' }
+  ];
+
+  const clone = (o)=> JSON.parse(JSON.stringify(o));
+  let kpi = clone(initialKpi);
+  let situations = clone(initialSituations);
+  let actions = clone(initialActions);
+  let uid = 100;
+
+  const $  = (s,r)=> (r||document).querySelector(s);
+  const $$ = (s,r)=> Array.from((r||document).querySelectorAll(s));
+  const fr = (d)=> { const [y,m,day]=d.split('-'); return `${day}/${m}/${y.slice(2)}`; };
+  const getPath = (obj,path)=> path.split('.').reduce((o,k)=> o[k], obj);
+  const setPath = (obj,path,val)=>{ const p=path.split('.'); const last=p.pop(); const t=p.reduce((o,k)=>o[k],obj); t[last]=val; };
+
+  // ---------------- editable value widget ----------------
+  function ev(path, value, opts){
+    opts = opts || {};
+    const type = opts.type === 'text' ? 'text' : 'number';
+    return `<span class="editval" data-path="${path}" data-type="${type}">${value}</span>`;
+  }
+  function startEdit(el){
+    if(el.querySelector('input')) return;
+    const path = el.dataset.path;
+    const type = el.dataset.type;
+    const current = getPath(kpi, path);
+    const width = Math.max(2, String(current).length + 2);
+    el.innerHTML = `<input class="editinput" type="${type}" value="${current}" style="width:${width}ch" ${type==='number' ? 'min="0" step="1"' : ''}>`;
+    const inp = el.querySelector('input');
+    requestAnimationFrame(()=>{ inp.focus(); inp.select(); });
+    let done = false;
+    function commit(){
+      if(done) return; done = true;
+      let v = inp.value;
+      if(type==='number'){ v = parseFloat(v); if(isNaN(v) || v<0) v = current; }
+      else { v = v.trim() || current; }
+      setPath(kpi, path, v);
+      renderMesurer();
+    }
+    function cancel(){ if(done) return; done = true; renderMesurer(); }
+    inp.addEventListener('blur', commit);
+    inp.addEventListener('keydown', (e)=>{
+      if(e.key==='Enter'){ e.preventDefault(); commit(); }
+      else if(e.key==='Escape'){ e.preventDefault(); cancel(); }
+    });
+  }
+  function focusPath(path){
+    requestAnimationFrame(()=>{
+      const el = document.querySelector(`[data-path="${path}"]`);
+      if(el) startEdit(el);
+    });
+  }
+
+  // ---------------- Mesurer : render ----------------
+  function drawSpark(data){
+    const w=240,h=46,pad=4;
+    const max=Math.max(...data), min=Math.min(...data);
+    const step=(w-2*pad)/(Math.max(1,data.length-1));
+    const y = v => h-pad-( (v-min)/((max-min)||1) )*(h-2*pad);
+    const pts = data.map((v,i)=>[pad+i*step, y(v)]);
+    const line = pts.map((p,i)=> (i?'L':'M')+p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ');
+    const area = line + ` L${pts[pts.length-1][0]},${h-pad} L${pts[0][0]},${h-pad} Z`;
+    const last = pts[pts.length-1];
+    const svg = $('#sparkSvg');
+    if(svg) svg.innerHTML = `
+      <path d="${area}" fill="var(--accent-soft)" stroke="none"/>
+      <path d="${line}" fill="none" stroke="var(--accent)" stroke-width="2"/>
+      <circle cx="${last[0]}" cy="${last[1]}" r="3.4" fill="var(--accent)"/>`;
+  }
+
+  function tileRealise(){
+    return `<div class="tile t-realise">
+      <h3>VMS réalisées ce mois</h3>
+      <div class="big mono">${ev('vmsMois', kpi.vmsMois)} <small>/ ${ev('vmsObjectif', kpi.vmsObjectif)} attendues</small></div>
+      <svg class="spark" viewBox="0 0 240 46" preserveAspectRatio="none" id="sparkSvg"></svg>
+      <details class="trend-edit">
+        <summary></summary>
+        <div class="trend-grid">
+          ${kpi.trend.map((v,i)=>`<div class="trend-cell"><span class="tlabel">${MONTHS[i]}</span>${ev('trend.'+i, v)}</div>`).join('')}
+        </div>
+      </details>
+      <div class="foot">Cumul depuis janvier : <b class="mono">${ev('vmsCumulAnnee', kpi.vmsCumulAnnee)}</b> VMS</div>
+    </div>`;
+  }
+  function tileTaux(){
+    const pct = kpi.managersTotal>0 ? Math.round(kpi.managersRealises/kpi.managersTotal*100) : 0;
+    const c=188.5, off=(c*(1-Math.min(100,pct)/100)).toFixed(1);
+    return `<div class="tile t-taux">
+      <h3>Taux de réalisation</h3>
+      <div class="ring">
+        <svg width="72" height="72" viewBox="0 0 72 72">
+          <circle cx="36" cy="36" r="30" fill="none" stroke="var(--bar-soft)" stroke-width="9"/>
+          <circle cx="36" cy="36" r="30" fill="none" stroke="var(--good)" stroke-width="9" stroke-dasharray="${c}" stroke-dashoffset="${off}" stroke-linecap="round" transform="rotate(-90 36 36)"/>
+          <text x="36" y="41" text-anchor="middle" font-family="IBM Plex Mono" font-weight="700" font-size="16" fill="var(--ink)">${pct}%</text>
+        </svg>
+        <div>
+          <div class="big mono" style="font-size:20px;">${ev('managersRealises', kpi.managersRealises)}<small>/${ev('managersTotal', kpi.managersTotal)} managers</small></div>
+          <div class="foot">ont réalisé au moins 1 VMS ce mois</div>
+        </div>
+      </div>
+    </div>`;
+  }
+  function tileSuperv(){
+    const pct = kpi.supervisionTotal>0 ? Math.round(kpi.supervisesN1/kpi.supervisionTotal*100) : 0;
+    const c=188.5, off=(c*(1-Math.min(100,pct)/100)).toFixed(1);
+    const remain = kpi.supervisionTotal - kpi.supervisesN1;
+    return `<div class="tile t-superv">
+      <h3>Supervision N+1 (trimestre)</h3>
+      <div class="ring">
+        <svg width="72" height="72" viewBox="0 0 72 72">
+          <circle cx="36" cy="36" r="30" fill="none" stroke="var(--bar-soft)" stroke-width="9"/>
+          <circle cx="36" cy="36" r="30" fill="none" stroke="var(--accent)" stroke-width="9" stroke-dasharray="${c}" stroke-dashoffset="${off}" stroke-linecap="round" transform="rotate(-90 36 36)"/>
+          <text x="36" y="41" text-anchor="middle" font-family="IBM Plex Mono" font-weight="700" font-size="16" fill="var(--ink)">${pct}%</text>
+        </svg>
+        <div>
+          <div class="big mono" style="font-size:20px;">${ev('supervisesN1', kpi.supervisesN1)}<small>/${ev('supervisionTotal', kpi.supervisionTotal)}</small></div>
+          <div class="foot ${remain>0?'alert':'ok'}">${remain>0 ? remain+' manager'+(remain>1?'s':'')+' pas encore observé'+(remain>1?'s':'')+' ce trimestre' : 'Tous les managers ont été supervisés ce trimestre'}</div>
+        </div>
+      </div>
+    </div>`;
+  }
+  function barlistRows(list, prefix, removeAttr){
+    if(!list.length) return `<p style="color:var(--ink-muted); font-size:12.5px; margin:2px 0;">Aucune entrée pour le moment.</p>`;
+    const max = Math.max(1, ...list.map(r=>r.v||0));
+    return list.map((r,i)=>{
+      const zero = r.v===0;
+      const pct = zero ? 0 : Math.max(6,(r.v/max)*100);
+      return `<div class="row ${zero?'zero':''}">
+        <span class="label">${ev(prefix+'.'+i+'.label', r.label, {type:'text'})}</span>
+        <div class="track"><div class="fill ${zero?'zero':''}" style="width:${pct}%"></div></div>
+        <span class="val">${ev(prefix+'.'+i+'.v', r.v)}</span>
+        <button class="rowremove" data-${removeAttr}="${i}" title="Supprimer">×</button>
+      </div>`;
+    }).join('');
+  }
+  function tileSecteur(){
+    return `<div class="tile t-secteur">
+      <h3>Répartition par secteur</h3>
+      <div class="barlist">${barlistRows(kpi.secteurs,'secteurs','rmsecteur')}</div>
+      <button class="rowadd" data-addsecteur>+ Ajouter un secteur</button>
+    </div>`;
+  }
+  function tileManager(){
+    return `<div class="tile t-manager">
+      <h3>Répartition par manager (${kpi.managers.length} sur ${ev('managersTotal', kpi.managersTotal)})</h3>
+      <div class="barlist">${barlistRows(kpi.managers,'managers','rmmanager')}</div>
+      <button class="rowadd" data-addmanager>+ Ajouter un manager</button>
+    </div>`;
+  }
+  function tileWeeks(){
+    const max = Math.max(1, ...kpi.semaine);
+    const total = kpi.semaine.reduce((a,b)=>a+b,0) || 1;
+    const lastPct = Math.round((kpi.semaine[3]||0)/total*100);
+    const alertOn = lastPct >= 35;
+    return `<div class="tile t-dates">
+      <h3>Réalisation dans le mois</h3>
+      <div class="weekbars">
+        ${kpi.semaine.map((v,i)=>`<div class="col">
+          <span class="n">${ev('semaine.'+i, v)}</span>
+          <div class="bar ${v/max>0.85?'hot':''}" style="height:${Math.max(4,(v/max)*100)}%"></div>
+          <span class="w">S${i+1}</span>
+        </div>`).join('')}
+      </div>
+      <div class="foot ${alertOn?'alert':'ok'}">${alertOn ? lastPct+'% des VMS concentrées en semaine 4 — risque d’effet « fin de mois »' : 'Réalisation bien répartie sur le mois'}</div>
+    </div>`;
+  }
+  function tileDiversite(){
+    const pPoste = Math.min(100, (kpi.postesCouverts/(kpi.postesTotal||1))*100);
+    const pHor = Math.min(100, (kpi.horairesCouverts/(kpi.horairesTotal||1))*100);
+    return `<div class="tile t-diversite">
+      <h3>Diversité des situations observées</h3>
+      <div class="cov">
+        <div class="item"><span class="lbl">Postes couverts</span><div class="track"><div class="fill" style="width:${pPoste}%"></div></div><span class="v">${ev('postesCouverts',kpi.postesCouverts)}/${ev('postesTotal',kpi.postesTotal)}</span></div>
+        <div class="item"><span class="lbl">Horaires couverts</span><div class="track"><div class="fill" style="width:${pHor}%"></div></div><span class="v">${ev('horairesCouverts',kpi.horairesCouverts)}/${ev('horairesTotal',kpi.horairesTotal)}</span></div>
+        <div class="item">
+          <span class="lbl">Profils observés</span>
+          <div class="tags" style="flex-wrap:wrap;">
+            ${kpi.profils.map((p,i)=>`<span class="tag"><span class="dot" style="background:var(--accent)"></span>${ev('profils.'+i, p, {type:'text'})}<button class="rowremove" data-rmprofil="${i}" title="Supprimer">×</button></span>`).join('')}
+            <button class="rowadd" data-addprofil style="padding:3px 10px; font-size:11.5px; border-radius:999px; margin-top:0;">+ Profil</button>
+          </div>
+          <span class="v"></span>
+        </div>
+      </div>
+    </div>`;
+  }
+  function renderMesurer(){
+    $('#kpiGrid').innerHTML = tileRealise()+tileTaux()+tileSuperv()+tileSecteur()+tileManager()+tileWeeks()+tileDiversite();
+    drawSpark(kpi.trend);
+  }
+
+  // ---------------- Comprendre ----------------
+  function situationCardHtml(s){
+    const meta = TYPE_META[s.type];
+    const linked = actions.filter(a=>a.situationId===s.id);
+    const tagsExtra = s.facteur ? `<span class="tag"><span class="dot" style="background:${meta.color}"></span>${s.facteur}</span>` : '';
+    const grav = s.gravite ? `<span class="tag">Gravité : ${s.gravite}</span><span class="tag">Fréquence : ${s.frequence}</span>` : '';
+    return `<div class="sit-card" id="card-${s.id}" data-type="${s.type}">
+      <div class="tags">
+        <span class="tag"><span class="dot" style="background:${meta.color}"></span>${meta.label}</span>
+        ${tagsExtra}${grav}
+      </div>
+      <p class="desc">${s.description}</p>
+      <div class="meta"><span>${s.secteur}</span><span>·</span><span>${s.manager}</span><span>·</span><span>${fr(s.date)}</span></div>
+      <div class="actions-row">
+        <button class="star-toggle ${s.pepite?'active':''}" data-togglepepite="${s.id}" title="Marquer ou retirer comme pépite du mois">${s.pepite?'★':'☆'} Pépite</button>
+        <div class="right">
+          ${linked.length ? `<span class="linked-chip">✓ ${linked.length} action${linked.length>1?'s':''} créée${linked.length>1?'s':''}</span>` : ''}
+          <button class="btn ghost" data-createaction="${s.id}">+ Créer une action</button>
+        </div>
+      </div>
+      <form class="inline-form" id="form-${s.id}" data-for="${s.id}">
+        <div class="full"><label>Type d'action</label>
+          <select name="type">
+            <option value="capitaliser" ${SUGGEST_TYPE[s.type]==='capitaliser'?'selected':''}>Capitaliser</option>
+            <option value="accompagner" ${SUGGEST_TYPE[s.type]==='accompagner'?'selected':''}>Accompagner</option>
+            <option value="explorer" ${SUGGEST_TYPE[s.type]==='explorer'?'selected':''}>Explorer et corriger</option>
+          </select>
+        </div>
+        <div class="full"><label>Action</label><input name="libelle" value="À définir suite à : ${s.description.slice(0,50)}…" required></div>
+        <div><label>Responsable</label><input name="responsable" placeholder="Nom" required></div>
+        <div><label>Échéance</label><input type="date" name="echeance" value="2026-09-30" required></div>
+        <div class="row-btns">
+          <button type="button" class="btn" data-cancel="${s.id}">Annuler</button>
+          <button type="submit" class="btn primary">Ajouter au tableau Décider</button>
+        </div>
+      </form>
+    </div>`;
+  }
+
+  let activeTab = 'bonne_pratique';
+  function renderPepites(){
+    const peps = situations.filter(s=>s.pepite);
+    $('#pepitesCount').textContent = peps.length
+      ? `${peps.length} pépite${peps.length>1?'s':''} sélectionnée${peps.length>1?'s':''} ce mois${peps.length>3?' — au-delà de 3, l’impact en COPIL s’émousse' : ''}`
+      : `Aucune pépite pour l’instant`;
+    $('#pepitesStrip').innerHTML = peps.map(s=>{
+      const meta = TYPE_META[s.type];
+      return `<div class="pepite-card">
+        <div class="star">★ ${meta.label}${s.facteur?' — '+s.facteur:''}</div>
+        <p>${s.description}</p>
+        <div class="src">${s.secteur} · ${s.manager}</div>
+      </div>`;
+    }).join('') || `<div class="pepite-empty">Pas encore de pépite ce mois. Repérez les remontées marquantes ci-dessous et cliquez sur <strong>★ Pépite</strong> pour les épingler ici (2 à 3 maximum, pour garder l'impact).</div>`;
+  }
+  function renderSituations(){
+    ['bonne_pratique','risque_comportemental','situation_risque'].forEach(t=>{
+      $('#cnt-'+t).textContent = situations.filter(s=>s.type===t).length;
+    });
+    const list = situations.filter(s=>s.type===activeTab);
+    $('#situationsGrid').innerHTML = list.map(situationCardHtml).join('') || '<p style="color:var(--ink-muted)">Aucune remontée dans cette catégorie pour le moment.</p>';
+  }
+
+  // ---------------- Décider ----------------
+  let activeFilter = 'all';
+  function isOverdue(a){ return a.statut!=='Fait' && new Date(a.echeance+'T00:00:00') < MEETING_DATE; }
+  function renderSummary(){
+    const counts = { 'À faire':0,'En cours':0,'Bloqué':0,'Fait':0 };
+    let retard=0;
+    actions.forEach(a=>{ counts[a.statut]=(counts[a.statut]||0)+1; if(isOverdue(a)) retard++; });
+    $('#deciderSummary').innerHTML = `
+      <div class="sum-chip"><span class="n mono">${actions.length}</span><span class="l">Actions au total</span></div>
+      <div class="sum-chip"><span class="n mono" style="color:var(--ink-2)">${counts['À faire']}</span><span class="l">À faire</span></div>
+      <div class="sum-chip"><span class="n mono" style="color:var(--accent)">${counts['En cours']}</span><span class="l">En cours</span></div>
+      <div class="sum-chip"><span class="n mono" style="color:var(--good)">${counts['Fait']}</span><span class="l">Fait</span></div>
+      <div class="sum-chip"><span class="n mono" style="color:var(--critical)">${retard}</span><span class="l">En retard</span></div>`;
+  }
+  function renderDecider(){
+    const rows = actions.filter(a=> activeFilter==='all' ? true : a.statut===activeFilter)
+                         .slice().sort((a,b)=> a.echeance.localeCompare(b.echeance));
+    $('#deciderBody').innerHTML = rows.map(a=>{
+      const tmeta = ACTION_TYPE_META[a.type];
+      const overdue = isOverdue(a);
+      const sit = situations.find(s=>s.id===a.situationId);
+      return `<tr class="${overdue?'retard':''}">
+        <td><span class="tag"><span class="dot" style="background:${tmeta.color}"></span>${tmeta.label}</span></td>
+        <td><div class="lib">${a.libelle}</div>${a.note?`<div class="note">${a.note}</div>`:''}</td>
+        <td>${sit ? `<button class="src-chip" data-scrollto="${sit.id}">${TYPE_META[sit.type].label}</button>` : '<span class="src-chip none">—</span>'}</td>
+        <td>${a.responsable}</td>
+        <td class="echeance">${fr(a.echeance)} ${overdue?'<span class="badge retard">retard</span>':''}</td>
+        <td>
+          <select class="statut-select" data-statut="${a.id}">
+            ${['À faire','En cours','Bloqué','Fait'].map(s=>`<option ${s===a.statut?'selected':''}>${s}</option>`).join('')}
+          </select>
+        </td>
+      </tr>`;
+    }).join('') || `<tr><td colspan="6" style="color:var(--ink-muted); text-align:center; padding:24px;">Aucune action pour ce filtre.</td></tr>`;
+  }
+
+  // ---------------- events ----------------
+  document.addEventListener('click', (e)=>{
+    const editSpan = e.target.closest('.editval');
+    if(editSpan){ startEdit(editSpan); return; }
+
+    const tab = e.target.closest('.tabbtn');
+    if(tab){ activeTab=tab.dataset.tab; $$('.tabbtn').forEach(b=>b.classList.toggle('active',b===tab)); renderSituations(); return; }
+
+    const filt = e.target.closest('.filterbtn');
+    if(filt){ activeFilter=filt.dataset.filter; $$('.filterbtn').forEach(b=>b.classList.toggle('active',b===filt)); renderDecider(); return; }
+
+    const createBtn = e.target.closest('[data-createaction]');
+    if(createBtn){ const f=$('#form-'+createBtn.dataset.createaction); f.classList.add('open'); return; }
+
+    const cancelBtn = e.target.closest('[data-cancel]');
+    if(cancelBtn){ $('#form-'+cancelBtn.dataset.cancel).classList.remove('open'); return; }
+
+    const pepBtn = e.target.closest('[data-togglepepite]');
+    if(pepBtn){
+      const s = situations.find(x=>x.id===pepBtn.dataset.togglepepite);
+      s.pepite = !s.pepite;
+      renderSituations(); renderPepites();
+      return;
+    }
+
+    const scrollBtn = e.target.closest('[data-scrollto]');
+    if(scrollBtn){
+      const target = scrollBtn.dataset.scrollto;
+      const sit = situations.find(x=>x.id===target);
+      if(sit && sit.type !== activeTab){ activeTab = sit.type; $$('.tabbtn').forEach(b=>b.classList.toggle('active', b.dataset.tab===activeTab)); renderSituations(); }
+      requestAnimationFrame(()=>{
+        const el = $('#card-'+target);
+        if(el){ el.scrollIntoView({behavior:'smooth', block:'center'}); el.classList.add('flash'); setTimeout(()=>el.classList.remove('flash'),1400); }
+      });
+      return;
+    }
+
+    if(e.target.closest('[data-addsecteur]')){ kpi.secteurs.push({label:'Nouveau secteur', v:0}); const i=kpi.secteurs.length-1; renderMesurer(); focusPath('secteurs.'+i+'.label'); return; }
+    const rmSecteur = e.target.closest('[data-rmsecteur]');
+    if(rmSecteur){ kpi.secteurs.splice(+rmSecteur.dataset.rmsecteur,1); renderMesurer(); return; }
+
+    if(e.target.closest('[data-addmanager]')){ kpi.managers.push({label:'Nouveau manager', v:0}); const i=kpi.managers.length-1; renderMesurer(); focusPath('managers.'+i+'.label'); return; }
+    const rmManager = e.target.closest('[data-rmmanager]');
+    if(rmManager){ kpi.managers.splice(+rmManager.dataset.rmmanager,1); renderMesurer(); return; }
+
+    if(e.target.closest('[data-addprofil]')){ kpi.profils.push('Nouveau profil'); const i=kpi.profils.length-1; renderMesurer(); focusPath('profils.'+i); return; }
+    const rmProfil = e.target.closest('[data-rmprofil]');
+    if(rmProfil){ kpi.profils.splice(+rmProfil.dataset.rmprofil,1); renderMesurer(); return; }
+
+    const resetBtn = e.target.closest('#resetBtn');
+    if(resetBtn){
+      kpi = clone(initialKpi); situations = clone(initialSituations); actions = clone(initialActions); uid = 100;
+      activeTab='bonne_pratique'; activeFilter='all';
+      $$('.tabbtn').forEach(b=>b.classList.toggle('active', b.dataset.tab==='bonne_pratique'));
+      $$('.filterbtn').forEach(b=>b.classList.toggle('active', b.dataset.filter==='all'));
+      renderMesurer(); renderPepites(); renderSituations(); renderSummary(); renderDecider();
+      const label = resetBtn.textContent;
+      resetBtn.textContent = '✓ Démo réinitialisée';
+      setTimeout(()=>{ resetBtn.textContent = label; }, 1500);
+      return;
+    }
+  });
+
+  document.addEventListener('change', (e)=>{
+    const sel = e.target.closest('[data-statut]');
+    if(sel){
+      const a = actions.find(x=>x.id===sel.dataset.statut);
+      a.statut = sel.value;
+      renderSummary(); renderDecider();
+    }
+  });
+
+  document.addEventListener('submit', (e)=>{
+    if(e.target.matches('.inline-form')){
+      e.preventDefault();
+      const sid = e.target.dataset.for;
+      const fd = new FormData(e.target);
+      uid++;
+      actions.push({ id:'a'+uid, type:fd.get('type'), libelle:fd.get('libelle'), situationId:sid,
+        responsable:fd.get('responsable'), echeance:fd.get('echeance'), statut:'À faire', note:'' });
+      e.target.classList.remove('open');
+      renderSituations(); renderSummary(); renderDecider();
+      document.getElementById('decider').scrollIntoView({behavior:'smooth', block:'start'});
+      return;
+    }
+    if(e.target.id==='addSituationForm'){
+      e.preventDefault();
+      const fd = new FormData(e.target);
+      uid++;
+      const type = fd.get('type');
+      const s = { id:'s'+uid, type, description:fd.get('description'), secteur:fd.get('secteur'),
+        manager:fd.get('manager'), date:fd.get('date'), pepite:false };
+      if(type==='situation_risque'){ s.gravite='À qualifier'; s.frequence='À qualifier'; }
+      situations.push(s);
+      activeTab = type; $$('.tabbtn').forEach(b=>b.classList.toggle('active', b.dataset.tab===type));
+      renderSituations();
+      e.target.reset();
+      return;
+    }
+    if(e.target.id==='addActionForm'){
+      e.preventDefault();
+      const fd = new FormData(e.target);
+      uid++;
+      actions.push({ id:'a'+uid, type:fd.get('type'), libelle:fd.get('libelle'), situationId:null,
+        responsable:fd.get('responsable'), echeance:fd.get('echeance'), statut:fd.get('statut'), note:fd.get('note')||'' });
+      renderSummary(); renderDecider();
+      e.target.reset();
+      return;
+    }
+  });
+
+  // ---------------- init ----------------
+  renderMesurer();
+  renderPepites();
+  renderSituations();
+  renderSummary();
+  renderDecider();
+})();
+</script>
+
+</body></html>
